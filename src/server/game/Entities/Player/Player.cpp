@@ -1749,7 +1749,9 @@ void Player::Update(uint32 p_time)
     {
         if (_pendingBindTimer <= p_time)
         {
-            BindToInstance();
+            // Player left the instance
+            if (_pendingBind->GetInstanceId() == GetInstanceId())
+                BindToInstance();
             SetPendingBind(NULL, 0);
         }
         else
@@ -2282,22 +2284,12 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             if (!GetSession()->PlayerLogout())
             {
                 // send transfer packets
-                WorldPacket data(SMSG_TRANSFER_PENDING, (4+4+4));
+                WorldPacket data(SMSG_TRANSFER_PENDING, 4 + 4 + 4);
                 data << uint32(mapid);
                 if (m_transport)
-                {
                     data << m_transport->GetEntry() << GetMapId();
-                }
-                GetSession()->SendPacket(&data);
-
-                data.Initialize(SMSG_NEW_WORLD, (20));
-                if (m_transport)
-                    data << (uint32)mapid << m_movementInfo.t_pos.PositionXYZOStream();
-                else
-                    data << (uint32)mapid << (float)x << (float)y << (float)z << (float)orientation;
 
                 GetSession()->SendPacket(&data);
-                SendSavedInstances();
             }
 
             // remove from old map now
@@ -2323,6 +2315,19 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             m_anti_JumpBaseZ = 0;
             // if the player is saved before worldportack (at logout for example)
             // this will be used instead of the current location in SaveToDB
+
+            if (!GetSession()->PlayerLogout())
+            {
+                WorldPacket data(SMSG_NEW_WORLD, 4 + 4 + 4 + 4 + 4);
+                data << uint32(mapid);
+                if (m_transport)
+                    data << m_movementInfo.t_pos.PositionXYZOStream();
+                else
+                    data << m_teleport_dest.PositionXYZOStream();
+
+                GetSession()->SendPacket(&data);
+                SendSavedInstances();
+            }
 
             // move packet sent by client always after far teleport
             // code for finish transfer to new map called in WorldSession::HandleMoveWorldportAckOpcode at client packet
@@ -18003,10 +18008,6 @@ InstancePlayerBind* Player::BindToInstance(InstanceSave *save, bool permanent, b
 
 void Player::BindToInstance()
 {
-    // Player left the instance
-    if (_pendingBind->GetInstanceId() != GetInstanceId())
-        return;
-
     WorldPacket data(SMSG_INSTANCE_SAVE_CREATED, 4);
     data << uint32(0);
     GetSession()->SendPacket(&data);
