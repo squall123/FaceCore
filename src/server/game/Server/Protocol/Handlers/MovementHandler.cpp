@@ -49,6 +49,8 @@ void WorldSession::HandleMoveWorldportAckOpcode()
     if (!GetPlayer()->IsBeingTeleportedFar())
         return;
 
+    GetPlayer()->SetSemaphoreTeleportFar(false);
+
     // get the teleport destination
     WorldLocation &loc = GetPlayer()->GetTeleportDest();
 
@@ -66,8 +68,6 @@ void WorldSession::HandleMoveWorldportAckOpcode()
     // reset instance validity, except if going to an instance inside an instance
     if (GetPlayer()->m_InstanceValid == false && !mInstance)
         GetPlayer()->m_InstanceValid = true;
-
-    GetPlayer()->SetSemaphoreTeleportFar(false);
 
     Map * oldMap = GetPlayer()->GetMap();
     ASSERT(oldMap);
