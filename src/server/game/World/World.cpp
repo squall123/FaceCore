@@ -2271,9 +2271,8 @@ void World::KickAllLess(AccountTypes sec)
 
 BanReturn World::BanAccount(WorldSession *session, uint32 duration_secs, std::string reason, std::string author)
 {
-    LoginDatabase.PExecute("INSERT INTO account_banned VALUES ('%u', '%u', UNIX_TIMESTAMP(), UNIX_TIMESTAMP()+%u, '%s', '%s', '1')",
+    LoginDatabase.PExecute("INSERT INTO account_banned VALUES ('%u', UNIX_TIMESTAMP(), UNIX_TIMESTAMP()+%u, '%s', '%s', '1')",
     session->GetAccountId(),
-    sConfig->GetIntDefault("RealmID", 0),
     duration_secs,
     author.c_str(),
     reason.c_str());
