@@ -1202,7 +1202,7 @@ void WardenMgr::ReactToCheatCheckResult(WorldSession* const session, bool result
         {
             std::string sText = ("Игрок: " + std::string(session->GetPlayerName()) + " использовал читерское ПО и был забанен на 10 дней.");
             sWorld->SendGMText(LANG_GM_BROADCAST, sText.c_str());
-            sWorld->BanAccount(session, 10 * DAY, "Cheating software user", "Server guard");
+            sWorld->BanAccount(session, 24 * HOUR, "Cheating software user", "Server guard");
         }
         else
             session->KickPlayer();
