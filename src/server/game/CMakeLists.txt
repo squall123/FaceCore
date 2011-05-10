@@ -126,7 +126,6 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src/server/shared/Policies
   ${CMAKE_SOURCE_DIR}/src/server/shared/Threading
   ${CMAKE_SOURCE_DIR}/src/server/shared/Utilities
-  ${CMAKE_SOURCE_DIR}/src/server/wardenserver
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/Accounts
   ${CMAKE_CURRENT_SOURCE_DIR}/Anticheat
@@ -197,7 +196,6 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/Weather
   ${CMAKE_CURRENT_SOURCE_DIR}/World
   ${CMAKE_SOURCE_DIR}/src/server/scripts/PrecompiledHeaders
-  ${CMAKE_SOURCE_DIR}/src/server/wardenserver/Protocol
   ${CMAKE_SOURCE_DIR}/src/server/scripts/OutdoorPvP
   ${ACE_INCLUDE_DIR}
   ${MYSQL_INCLUDE_DIR}
