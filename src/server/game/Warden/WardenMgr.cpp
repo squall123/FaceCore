@@ -146,36 +146,23 @@ void WardenMgr::Update(WorldSession* const session)
                 session->KickPlayer();
                 return;
             case WARD_STATE_CHEAT_CHECK_OUT:   // timeout waiting for a cheat check reply
-                if (session->m_wardenAttempts < 3)
-                {
-                    sLog->outError("Warden Manager: no Cheat-check reply received, SendCheatCheck for account %u, Attempt %u", session->GetAccountId(), session->m_wardenAttempts);
-                    ++session->m_wardenAttempts;
-                    SendCheatCheck(session);
-                    session->m_wardenStatus = WARD_STATE_CHEAT_CHECK_OUT;
-                    session->m_WardenTimer.SetInterval( 2 * MINUTE * IN_MILLISECONDS);
-                    session->m_WardenTimer.Reset();
-                }
-                else
-                {
                 sLog->outError("Warden Manager: no Cheat-check reply received, kicking account %u", session->GetAccountId());
                 session->KickPlayer();
-                }
                 return;
             case WARD_STATE_FORCE_CHEAT_CHECK_OUT:   // timeout waiting for a Force cheat check reply
                 sLog->outError("Warden Manager: no Force Cheat-check reply received, kicking account %u", session->GetAccountId());
                 session->KickPlayer();
                 return;
             case WARD_STATE_CHEAT_CHECK_IN:    // send cheat check
-                session->m_wardenAttempts = 0;
                 SendCheatCheck(session);
                 session->m_wardenStatus = WARD_STATE_CHEAT_CHECK_OUT;
-                session->m_WardenTimer.SetInterval( 2 * MINUTE * IN_MILLISECONDS);
+                session->m_WardenTimer.SetInterval( 5 * MINUTE * IN_MILLISECONDS);
                 session->m_WardenTimer.Reset();
                 return;
             case WARD_STATE_FORCE_CHEAT_CHECK_IN:    // send only memory cheat check
                 SendForceWEHCheatCheck(session);
                 session->m_wardenStatus = WARD_STATE_FORCE_CHEAT_CHECK_OUT;
-                session->m_WardenTimer.SetInterval( 2 * MINUTE * IN_MILLISECONDS);
+                session->m_WardenTimer.SetInterval( 5 * MINUTE * IN_MILLISECONDS);
                 session->m_WardenTimer.Reset();
                 return;
             default:
@@ -1213,7 +1200,7 @@ void WardenMgr::ReactToCheatCheckResult(WorldSession* const session, bool result
     {
         if (m_Banning)
         {
-            std::string sText = ("Игрок: " + std::string(session->GetPlayerName()) + " использовал читерское ПО и был забанен на 10 дней.");
+            std::string sText = ("Игрок: " + std::string(session->GetPlayerName()) + " использовал читерское ПО и был забанен на 1 день.");
             sWorld->SendGMText(LANG_GM_BROADCAST, sText.c_str());
             sWorld->BanAccount(session, 24 * HOUR, "Cheating software user", "Server guard");
         }
